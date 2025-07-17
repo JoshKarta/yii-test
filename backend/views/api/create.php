@@ -1,0 +1,14 @@
+<?php
+
+use yii\helpers\Html;
+
+
+/* @var $this yii\web\View */
+/* @var $model common\models\Api */
+
+?>
+<div class="api-create">
+    <?= $this->render('_form', [
+        'model' => $model,
+    ]) ?>
+</div>
