@@ -63,7 +63,8 @@
     "mdmsoft/yii2-admin": "~2.0",
     "bedezign/yii2-audit": "^1.0",
     "webzop/yii2-notifications": "^0.2.0",
-    "tuyakhov/yii2-notifications": "*"
+    "tuyakhov/yii2-notifications": "*",
+    "rmrevin/yii2-fontawesome": "2.10.*"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",

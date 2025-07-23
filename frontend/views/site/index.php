@@ -2,7 +2,10 @@
 
 /** @var yii\web\View $this */
 
+use rmrevin\yii\fontawesome\FA;
+
 $this->title = 'My Yii Application';
+
 ?>
 <div class="site-index">
     <div class="p-5 mb-4 bg-transparent rounded-3">
@@ -27,7 +30,7 @@ $this->title = 'My Yii Application';
                     ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
                     fugiat nulla pariatur.</p>
 
-                <p><a class="btn btn-outline-warning" href="/posts">Posts &raquo;</a></p>
+                <p><a class="btn btn-outline-warning" href="/posts">Posts <i class="fa-regular fa-file"></i> &raquo;</a></p>
             </div>
             <div class="col-lg-4">
                 <h2>Heading</h2>
