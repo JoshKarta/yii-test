@@ -14,7 +14,7 @@ $this->title = 'My Yii Application';
             <p class="fs-5 fw-light">You have successfully created your Yii-powered application.</p>
             <div class="d-flex gap-2 justify-content-center">
                 <a class="btn btn-lg btn-success" href="https://www.yiiframework.com">Get started with Yii</a>
-                <a class="btn btn-lg btn-secondary" href="/backoffice">Backoffice</a>
+                <a class="btn btn-lg btn-outline-secondary" href="/backoffice">Backoffice</a>
             </div>
         </div>
     </div>

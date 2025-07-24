@@ -64,7 +64,13 @@
     "bedezign/yii2-audit": "^1.0",
     "webzop/yii2-notifications": "^0.2.0",
     "tuyakhov/yii2-notifications": "*",
-    "rmrevin/yii2-fontawesome": "2.10.*"
+    "rmrevin/yii2-fontawesome": "2.10.*",
+    "edofre/yii2-fullcalendar": "V1.0.11",
+    "edofre/yii2-fullcalendar-scheduler": "V1.1.12",
+    "philippfrenzel/yii2fullcalendar": "^4.0",
+    "bower-asset/moment": "^2.30",
+    "bower-asset/fullcalendar": "^4.4",
+    "kartik-v/yii2-widget-timepicker": "dev-master"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",
