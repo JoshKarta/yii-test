@@ -298,4 +298,9 @@ class SiteController extends Controller
 
         return ['success' => true];
     }
+
+    public function actionFormBuilder()
+    {
+        return $this->render('form-builder');
+    }
 }
