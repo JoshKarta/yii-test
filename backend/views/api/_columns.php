@@ -102,14 +102,14 @@ return [
     // 'class'=>'\kartik\grid\DataColumn',
     // 'attribute'=>'rate_limit',
     // ],
-    // [
-    // 'class'=>'\kartik\grid\DataColumn',
-    // 'attribute'=>'rate_limit_remaining',
-    // ],
-    // [
-    // 'class'=>'\kartik\grid\DataColumn',
-    // 'attribute'=>'rate_limit_reset_at',
-    // ],
+    [
+        'class' => '\kartik\grid\DataColumn',
+        'attribute' => 'rate_limit_remaining',
+    ],
+    [
+        'class' => '\kartik\grid\DataColumn',
+        'attribute' => 'rate_limit_reset_at',
+    ],
     // [
     // 'class'=>'\kartik\grid\DataColumn',
     // 'attribute'=>'created_at',
