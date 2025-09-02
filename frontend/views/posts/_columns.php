@@ -29,6 +29,14 @@ return [
     ],
     [
         'class' => '\kartik\grid\DataColumn',
+        'format' => 'raw',
+        'attribute' => 'status',
+        'value' => function ($model) {
+            return '<div class="badge bg-secondary">' . $model->workflowStatus->label . '</div>';
+        }
+    ],
+    [
+        'class' => '\kartik\grid\DataColumn',
         'attribute' => 'post_type_id',
         'value' => 'postType.name'
     ],
@@ -40,10 +48,6 @@ return [
         'class' => '\kartik\grid\DataColumn',
         'attribute' => 'content',
     ],
-    // [
-    // 'class'=>'\kartik\grid\DataColumn',
-    // 'attribute'=>'status',
-    // ],
     // [
     // 'class'=>'\kartik\grid\DataColumn',
     // 'attribute'=>'published_at',

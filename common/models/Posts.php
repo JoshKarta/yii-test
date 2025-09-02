@@ -126,6 +126,11 @@ class Posts extends \yii\db\ActiveRecord implements NotifiableInterface
     {
         return [
             [
+                'class' => \raoul2000\workflow\base\SimpleWorkflowBehavior::className(),
+                'defaultWorkflowId' => 'posts-workflow',
+                'propagateErrorsToModel' => true,
+            ],
+            [
                 'class' => BlameableBehavior::class,
                 'createdByAttribute' => 'author_id',
                 // 'updatedByAttribute' => 'updated_by',

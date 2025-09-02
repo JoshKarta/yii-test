@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\components\NotificationManager;
+use common\components\WorkflowHelper;
 use Yii;
 use common\models\Posts;
 use common\models\search\PostsSearch;
@@ -65,7 +66,12 @@ class PostsController extends Controller
                     'model' => $this->findModel($id),
                 ]),
                 'footer' => Html::button(Yii::t('yii2-ajaxcrud', 'Close'), ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => 'modal']) .
-                    Html::a(Yii::t('yii2-ajaxcrud', 'Update'), ['update', 'id' => $id], ['class' => 'btn btn-primary', 'role' => 'modal-remote']) .    Html::a(Yii::t('yii2-ajaxcrud', 'Signature'), ['/posts-signature/create', 'id' => $id], ['class' => 'btn btn-outline-warning', 'role' => 'modal-remote'])
+                    Html::a(Yii::t('yii2-ajaxcrud', 'Update'), ['update', 'id' => $id], ['class' => 'btn btn-primary', 'role' => 'modal-remote']) .  Html::a(Yii::t('yii2-ajaxcrud', 'Signature'), ['/posts-signature/create', 'id' => $id], ['class' => 'btn btn-outline-warning', 'role' => 'modal-remote']) .
+                    Html::a(
+                        Yii::t('yii2-ajaxcrud', 'Next Status'),
+                        ['go-to-next-status', 'id' => $id], // route, not function call
+                        ['class' => 'btn btn-outline-danger', 'role' => 'modal-remote']
+                    )
             ];
         } else {
             return $this->render('view', [
@@ -302,5 +308,21 @@ class PostsController extends Controller
         return $this->render('index.twig', [
             'postHtml' => $post->renderWithLayout(),
         ]);
+    }
+
+    public function actionGoToNextStatus($id)
+    {
+        $post = $this->findModel($id);
+
+        try {
+            WorkflowHelper::goToNextStatus($post);
+            $post->save(false);
+
+            Yii::$app->session->setFlash('success', 'Status updated successfully.');
+        } catch (\Throwable $th) {
+            Yii::$app->session->setFlash('error', 'Failed to update status: ' . $th->getMessage());
+        }
+
+        return $this->redirect(['index']);
     }
 }

@@ -9,5 +9,13 @@ return [
         'cache' => [
             'class' => \yii\caching\FileCache::class,
         ],
+        'workflowSource' => [
+            'class' => 'cornernote\workflow\manager\components\WorkflowDbSource',
+        ],
+    ],
+    'modules' => [
+        'workflow' => [
+            'class' => 'cornernote\workflow\manager\Module',
+        ],
     ],
 ];
