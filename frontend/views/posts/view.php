@@ -17,7 +17,14 @@ use common\models\Signature;
             'title',
             'slug',
             'content:ntext',
-            'status',
+            'status' => [
+                'label' => 'Status',
+                'format' => 'raw',
+                'value' =>
+                '<div class="badge bg-danger">'
+                    . $model->workflowStatus->label .
+                    '</div>',
+            ],
             'published_at',
             'created_at',
             'updated_at',

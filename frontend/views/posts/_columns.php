@@ -32,7 +32,7 @@ return [
         'format' => 'raw',
         'attribute' => 'status',
         'value' => function ($model) {
-            return '<div class="badge bg-secondary">' . $model->workflowStatus->label . '</div>';
+            return '<div class="badge bg-danger">' . $model->workflowStatus->label . '</div>';
         }
     ],
     [

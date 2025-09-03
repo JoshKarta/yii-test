@@ -11,6 +11,8 @@ use Yii;
  * @property string $name
  * @property string|null $description
  *
+ * @property NotificationRole[] $notificationRoles
+ * @property Notification[] $notifications
  * @property User[] $users
  */
 class Roles extends \yii\db\ActiveRecord
@@ -48,6 +50,26 @@ class Roles extends \yii\db\ActiveRecord
             'name' => 'Name',
             'description' => 'Description',
         ];
+    }
+
+    /**
+     * Gets query for [[NotificationRoles]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotificationRoles()
+    {
+        return $this->hasMany(NotificationRole::class, ['role_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Notifications]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotifications()
+    {
+        return $this->hasMany(Notification::class, ['id' => 'notification_id'])->viaTable('notification_role', ['role_id' => 'id']);
     }
 
     /**

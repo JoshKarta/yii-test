@@ -71,6 +71,11 @@ class PostsController extends Controller
                         Yii::t('yii2-ajaxcrud', 'Next Status'),
                         ['go-to-next-status', 'id' => $id], // route, not function call
                         ['class' => 'btn btn-outline-danger', 'role' => 'modal-remote']
+                    ) .
+                    Html::a(
+                        Yii::t('yii2-ajaxcrud', 'Final'),
+                        ['mark-doc-as-final', 'id' => $id], // route, not function call
+                        ['class' => 'btn btn-outline-success', 'role' => 'modal-remote']
                     )
             ];
         } else {
@@ -316,6 +321,22 @@ class PostsController extends Controller
 
         try {
             WorkflowHelper::goToNextStatus($post);
+            $post->save(false);
+
+            Yii::$app->session->setFlash('success', 'Status updated successfully.');
+        } catch (\Throwable $th) {
+            Yii::$app->session->setFlash('error', 'Failed to update status: ' . $th->getMessage());
+        }
+
+        return $this->redirect(['index']);
+    }
+
+    public function actionMarkDocAsFinal($id)
+    {
+        $post = $this->findModel($id);
+
+        try {
+            WorkflowHelper::setStatusToFinal($post);
             $post->save(false);
 
             Yii::$app->session->setFlash('success', 'Status updated successfully.');
