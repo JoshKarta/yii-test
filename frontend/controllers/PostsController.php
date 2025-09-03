@@ -2,7 +2,6 @@
 
 namespace frontend\controllers;
 
-use common\components\NotificationManager;
 use common\components\WorkflowHelper;
 use Yii;
 use common\models\Posts;
@@ -159,6 +158,7 @@ class PostsController extends Controller
         $request = Yii::$app->request;
         $model = $this->findModel($id);
 
+
         if ($request->isAjax) {
             /*
             *   Process for ajax request
@@ -173,16 +173,20 @@ class PostsController extends Controller
                     'footer' => Html::button(Yii::t('yii2-ajaxcrud', 'Close'), ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => 'modal']) .
                         Html::button(Yii::t('yii2-ajaxcrud', 'Save'), ['class' => 'btn btn-primary', 'type' => 'submit'])
                 ];
-            } else if ($model->load($request->post()) && $model->save()) {
-                return [
-                    'forceReload' => '#crud-datatable-pjax',
-                    'title' => "Posts #" . $id,
-                    'content' => $this->renderAjax('view', [
-                        'model' => $model,
-                    ]),
-                    'footer' => Html::button(Yii::t('yii2-ajaxcrud', 'Close'), ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => 'modal']) .
-                        Html::a(Yii::t('yii2-ajaxcrud', 'Update'), ['update', 'id' => $id], ['class' => 'btn btn-primary', 'role' => 'modal-remote'])
-                ];
+            } else if ($model->load($request->post())) {
+                WorkflowHelper::setStatusToFinal($model);
+
+                if ($model->save()) {
+                    return [
+                        'forceReload' => '#crud-datatable-pjax',
+                        'title' => "Posts #" . $id,
+                        'content' => $this->renderAjax('view', [
+                            'model' => $model,
+                        ]),
+                        'footer' => Html::button(Yii::t('yii2-ajaxcrud', 'Close'), ['class' => 'btn btn-default pull-left', 'data-bs-dismiss' => 'modal']) .
+                            Html::a(Yii::t('yii2-ajaxcrud', 'Update'), ['update', 'id' => $id], ['class' => 'btn btn-primary', 'role' => 'modal-remote'])
+                    ];
+                }
             } else {
                 return [
                     'title' => Yii::t('yii2-ajaxcrud', 'Update') . " Posts #" . $id,
@@ -197,8 +201,12 @@ class PostsController extends Controller
             /*
             *   Process for non-ajax request
             */
-            if ($model->load($request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($request->post())) {
+                WorkflowHelper::setStatusToFinal($model);
+
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             } else {
                 return $this->render('update', [
                     'model' => $model,

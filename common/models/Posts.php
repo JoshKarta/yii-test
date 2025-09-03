@@ -2,8 +2,6 @@
 
 namespace common\models;
 
-use tuyakhov\notifications\NotifiableInterface;
-use tuyakhov\notifications\NotifiableTrait;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -30,10 +28,11 @@ use Twig\Environment;
  * @property PostsSignature[] $postsSignatures
  * @property User $updatedBy
  */
-class Posts extends \yii\db\ActiveRecord implements NotifiableInterface
+class Posts extends \yii\db\ActiveRecord
 {
 
-    use NotifiableTrait;
+    public $publish = 0;
+
     /**
      * {@inheritdoc}
      */
@@ -56,6 +55,7 @@ class Posts extends \yii\db\ActiveRecord implements NotifiableInterface
             [['published_at', 'created_at', 'updated_at'], 'safe'],
             [['title', 'slug'], 'string', 'max' => 255],
             [['status'], 'string', 'max' => 50],
+            [['publish'], 'boolean'],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['author_id' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
             [['post_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => PostType::class, 'targetAttribute' => ['post_type_id' => 'id']],
@@ -166,5 +166,19 @@ class Posts extends \yii\db\ActiveRecord implements NotifiableInterface
             'postType' => $this->postType,
             'signatures' => $this->postsSignatures,
         ]);
+    }
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        // If publish is true and published_at not yet set, set it to now
+        if ($this->publish && empty($this->published_at)) {
+            $this->published_at = date('Y-m-d H:i:s');
+        }
+
+        return true;
     }
 }

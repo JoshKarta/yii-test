@@ -6,6 +6,7 @@ use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\ArrayHelper;
 use common\models\PostType;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Posts */
@@ -19,7 +20,16 @@ $postTypes = ArrayHelper::map(PostType::find()->all(), 'id', 'name');
 
 <div class="posts-form">
 
-    <h2><?= $model->title ?></h2>
+    <div class="row">
+        <div class="col-md-6">
+            <h2><?= $model->title ?></h2>
+        </div>
+        <div class="col-md-6 align-content-center">
+            <span class="float-end badge bg-danger fs-6">
+                <?= $model->workflowStatus->label ?>
+            </span>
+        </div>
+    </div>
 
     <?php $form = ActiveForm::begin(); ?>
 
@@ -36,6 +46,16 @@ $postTypes = ArrayHelper::map(PostType::find()->all(), 'id', 'name');
     <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 
     <!-- <?= $form->field($model, 'status')->textInput(['maxlength' => true]) ?> -->
+
+    <!-- Mark document as Final Checkbox -->
+    <?php if ($model->workflowStatus && $model->workflowStatus->label === 'hoofd'): ?>
+        <?= $form->field($model, 'publish')->checkbox([
+            'id' => 'mark-final-checkbox',
+            'label' => 'Publiseer post',
+            'uncheck' => 0,   // value saved when unchecked
+            'value' => 1,     // value saved when checked
+        ]) ?>
+    <?php endif; ?>
 
 
     <?php if (!Yii::$app->request->isAjax) { ?>
