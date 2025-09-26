@@ -3,23 +3,23 @@ use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\Notification */
+/* @var $model common\models\NotificationUser */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="notification-form">
+<div class="notification-user-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'key')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'notification_id')->textInput() ?>
 
-    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'user_id')->textInput() ?>
 
-    <?= $form->field($model, 'message_template')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'message')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'enabled')->textInput() ?>
+    <?= $form->field($model, 'link')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'send_email')->textInput() ?>
+    <?= $form->field($model, 'is_read')->textInput() ?>
 
     <?= $form->field($model, 'created_at')->textInput() ?>
 

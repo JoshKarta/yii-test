@@ -28,16 +28,12 @@ return [
     ],
     [
         'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'channels',
+        'attribute'=>'enabled',
     ],
     [
         'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'enabled',
+        'attribute'=>'send_email',
     ],
-    // [
-        // 'class'=>'\kartik\grid\DataColumn',
-        // 'attribute'=>'send_email',
-    // ],
     // [
         // 'class'=>'\kartik\grid\DataColumn',
         // 'attribute'=>'created_at',

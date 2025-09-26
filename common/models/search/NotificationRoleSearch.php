@@ -18,7 +18,7 @@ class NotificationRoleSearch extends NotificationRole
     public function rules()
     {
         return [
-            [['notification_id', 'role'], 'integer'],
+            [['notification_id', 'role_id'], 'integer'],
         ];
     }
 
@@ -56,7 +56,7 @@ class NotificationRoleSearch extends NotificationRole
 
         $query->andFilterWhere([
             'notification_id' => $this->notification_id,
-            'role' => $this->role,
+            'role_id' => $this->role_id,
         ]);
 
         return $dataProvider;

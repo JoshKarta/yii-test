@@ -5,12 +5,12 @@ namespace common\models\search;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\NotificationTrigger;
+use common\models\NotificationUser;
 
 /**
- * NotificationTriggerSearch represents the model behind the search form about `common\models\NotificationTrigger`.
+ * NotificationUserSearch represents the model behind the search form about `common\models\NotificationUser`.
  */
-class NotificationTriggerSearch extends NotificationTrigger
+class NotificationUserSearch extends NotificationUser
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class NotificationTriggerSearch extends NotificationTrigger
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['route', 'notification_key', 'request_type', 'link_template'], 'safe'],
+            [['id', 'notification_id', 'user_id'], 'integer'],
+            [['message', 'link', 'is_read', 'created_at'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class NotificationTriggerSearch extends NotificationTrigger
      */
     public function search($params)
     {
-        $query = NotificationTrigger::find();
+        $query = NotificationUser::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -57,12 +57,14 @@ class NotificationTriggerSearch extends NotificationTrigger
 
         $query->andFilterWhere([
             'id' => $this->id,
+            'notification_id' => $this->notification_id,
+            'user_id' => $this->user_id,
+            'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'route', $this->route])
-            ->andFilterWhere(['like', 'notification_key', $this->notification_key])
-            ->andFilterWhere(['like', 'request_type', $this->request_type])
-            ->andFilterWhere(['like', 'link_template', $this->link_template]);
+        $query->andFilterWhere(['like', 'message', $this->message])
+            ->andFilterWhere(['like', 'link', $this->link])
+            ->andFilterWhere(['like', 'is_read', $this->is_read]);
 
         return $dataProvider;
     }

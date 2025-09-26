@@ -3,109 +3,102 @@
 namespace common\components;
 
 use Yii;
-use yii\helpers\ArrayHelper;
+use yii\base\Component;
+use yii\web\Request;
 use common\models\Notification;
-use common\models\UserNotification;
 use common\models\NotificationTrigger;
-use common\models\Roles;
-use common\models\User;
+use common\models\NotificationUser;
 
-class NotificationManager
+class NotificationManager extends Component
 {
-    public static function trigger($notificationKey, $data = [])
+    /**
+     * Main entry point for route-based triggers.
+     */
+    public function checkAndTrigger(string $route, Request $request, string $phase = 'before', array $extraParams = []): void
     {
-        $notification = Notification::find()
-            ->where(['key' => $notificationKey, 'enabled' => true])
-            ->one();
-
-        if (!$notification) {
+        $triggers = NotificationTrigger::find()->where(['route' => $route])->all();
+        if (empty($triggers)) {
             return;
         }
 
-        $message = $notification->message_template;
-        foreach ($data as $key => $value) {
-            $message = str_replace("{{$key}}", $value, $message);
-        }
+        foreach ($triggers as $trigger) {
+            // Match request type
+            if ($trigger->request_type === 'AJAX' && !$request->isAjax) {
+                continue;
+            }
+            if ($trigger->request_type === 'NON_AJAX' && $request->isAjax) {
+                continue;
+            }
 
-        $roleNames = ArrayHelper::getColumn($notification->notificationRoles, 'role');
-        $roleIds = Roles::find()->select('id')->where(['name' => $roleNames])->column();
-        if (empty($roleIds)) return;
+            // Handle create routes: skip BEFORE, only handle AFTER
+            if ($phase === 'before' && str_contains($route, '/create')) {
+                continue;
+            }
 
-        $users = User::find()->where(['role_id' => $roleIds])->all();
+            $notification = Notification::findOne(['key' => $trigger->notification_key, 'enabled' => 1]);
+            if (!$notification) {
+                continue;
+            }
 
-        foreach ($users as $user) {
-            $userNotif = new UserNotification([
-                'notification_id' => $notification->id,
-                'user_id' => $user->id,
-                'message' => $message,
-            ]);
+            // Merge GET, POST, and any extra parameters passed in (like model ID after save)
+            $replacements = array_merge($request->get(), $request->post(), $extraParams);
 
-            if (!$userNotif->save()) {
-                Yii::error("Notification failed for user {$user->id}: " . json_encode($userNotif->errors), __METHOD__);
+            // Apply templates
+            $message = $this->applyTemplate($notification->message_template, $replacements);
+            $link = $this->applyTemplate($trigger->link_template, $replacements);
+
+            // Find users via roles
+            $users = (new \yii\db\Query())
+                ->select('u.id')
+                ->from('user u')
+                ->innerJoin('notification_role nr', 'nr.role_id = u.role_id')
+                ->where(['nr.notification_id' => $notification->id])
+                ->all();
+
+            foreach ($users as $user) {
+                $nu = new NotificationUser([
+                    'notification_id' => $notification->id,
+                    'user_id'         => $user['id'],
+                    'message'         => $message,
+                    'link'            => $link,
+                ]);
+                $nu->save(false);
             }
 
             if ($notification->send_email) {
-                self::sendEmail($user, $notification->title, $message);
+                foreach ($users as $user) {
+                    $this->sendEmail($user['id'], $notification, $message, $link);
+                }
             }
         }
     }
 
-    public static function triggerByRoute($route, $modelId = null)
+    /**
+     * Replace {{placeholders}} with request or extra params.
+     */
+    protected function applyTemplate(?string $template, array $params): ?string
     {
-        $trigger = NotificationTrigger::find()->where(['route' => $route])->one();
-        if (!$trigger) return;
-
-        $modelClass = $trigger->model_class;
-        $idParam = $trigger->model_id_param;
-
-        $id = $modelId ??
-            Yii::$app->request->getBodyParam($idParam) ??
-            Yii::$app->request->getQueryParam($idParam);
-
-        if (!$id || !class_exists($modelClass)) return;
-
-        $model = $modelClass::findOne($id);
-        if (!$model) return;
-
-        $data = self::buildMessageData($model, $trigger);
-        self::trigger($trigger->notification_key, $data);
-    }
-
-    public static function buildMessageData($model, $trigger)
-    {
-        $fieldMap = json_decode($trigger->fields, true);
-        $data = [];
-
-        if (is_array($fieldMap)) {
-            foreach ($fieldMap as $placeholder => $attributePath) {
-                $data[$placeholder] = self::getAttributeByPath($model, $attributePath);
-            }
+        if (!$template) {
+            return null;
         }
 
-        $data['username'] = Yii::$app->user->identity->username ?? 'Guest';
-        return $data;
+        return preg_replace_callback('/{{(.*?)}}/', function ($matches) use ($params) {
+            $key = trim($matches[1]);
+            return $params[$key] ?? '';
+        }, $template);
     }
 
-    protected static function getAttributeByPath($model, $path)
+    protected function sendEmail($userId, Notification $notification, string $message, ?string $link = null): void
     {
-        $parts = explode('.', $path);
-        $value = $model;
-        foreach ($parts as $part) {
-            if (is_object($value) && isset($value->{$part})) {
-                $value = $value->{$part};
-            } else {
-                return null;
-            }
+        $user = \common\models\User::findOne($userId);
+        if (!$user || !$user->email) {
+            return;
         }
-        return $value;
-    }
 
-    protected static function sendEmail($user, $subject, $body)
-    {
         Yii::$app->mailer->compose()
             ->setTo($user->email)
-            ->setSubject($subject)
-            ->setHtmlBody($body)
+            ->setSubject($notification->title)
+            ->setTextBody($message . ($link ? "\n\n" . Yii::$app->urlManager->createAbsoluteUrl($link) : ''))
             ->send();
     }
 }

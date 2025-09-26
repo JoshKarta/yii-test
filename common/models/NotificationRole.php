@@ -5,13 +5,13 @@ namespace common\models;
 use Yii;
 
 /**
- * This is the model class for table "notification_role_id".
+ * This is the model class for table "notification_role".
  *
  * @property int $notification_id
  * @property int $role_id
  *
  * @property Notification $notification
- * @property role_ids $role_id0
+ * @property Roles $role
  */
 class NotificationRole extends \yii\db\ActiveRecord
 {
@@ -46,7 +46,7 @@ class NotificationRole extends \yii\db\ActiveRecord
     {
         return [
             'notification_id' => 'Notification ID',
-            'role_id' => 'role_id',
+            'role_id' => 'Role ID',
         ];
     }
 
@@ -69,4 +69,5 @@ class NotificationRole extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Roles::class, ['id' => 'role_id']);
     }
+
 }

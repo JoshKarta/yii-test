@@ -12,6 +12,9 @@ return [
         'workflowSource' => [
             'class' => 'cornernote\workflow\manager\components\WorkflowDbSource',
         ],
+        'notificationManager' => [
+            'class' => 'common\components\NotificationManager',
+        ],
     ],
     'modules' => [
         'workflow' => [

@@ -2,9 +2,9 @@
 
 namespace common\widgets;
 
+use common\models\NotificationUser;
 use Yii;
 use yii\base\Widget;
-use common\models\UserNotification;
 
 class NotificationDropdown extends Widget
 {
@@ -14,11 +14,11 @@ class NotificationDropdown extends Widget
     {
         $userId = Yii::$app->user->id;
 
-        $unreadCount = UserNotification::find()
+        $unreadCount = NotificationUser::find()
             ->where(['user_id' => $userId, 'is_read' => 0])
             ->count();
 
-        $notifications = UserNotification::find()
+        $notifications = NotificationUser::find()
             ->where(['user_id' => $userId])
             ->orderBy(['created_at' => SORT_DESC])
             ->limit($this->limit)

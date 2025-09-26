@@ -10,14 +10,34 @@ return [
         'class' => 'kartik\grid\SerialColumn',
         'width' => '30px',
     ],
-        [
+        // [
+        // 'class'=>'\kartik\grid\DataColumn',
+        // 'attribute'=>'id',
+    // ],
+    [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'notification_id',
     ],
     [
         'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'role_id',
+        'attribute'=>'user_id',
     ],
+    [
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'message',
+    ],
+    [
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'link',
+    ],
+    [
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'is_read',
+    ],
+    // [
+        // 'class'=>'\kartik\grid\DataColumn',
+        // 'attribute'=>'created_at',
+    // ],
     [
         'class' => 'kartik\grid\ActionColumn',
         'dropdown' => false,
@@ -25,7 +45,7 @@ return [
         'template' => '{view} {update} {delete}',
         'vAlign' => 'middle',
         'urlCreator' => function($action, $model, $key, $index) { 
-            return Url::to([$action,'notification_id, $role_id'=>$key]);
+            return Url::to([$action,'id'=>$key]);
         },
         'viewOptions' => ['role' => 'modal-remote', 'title' => Yii::t('yii2-ajaxcrud', 'View'), 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-outline-success'],
         'updateOptions' => ['role' => 'modal-remote', 'title' => Yii::t('yii2-ajaxcrud', 'Update'), 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-outline-primary'],

@@ -10,15 +10,20 @@ use Yii;
  * @property int $id
  * @property string $route
  * @property string $notification_key
- * @property string $model_class
- * @property string $model_id_param
- * @property string|null $fields
+ * @property string|null $request_type
  * @property string|null $link_template
- * @property string|null $trigger_type
+ *
+ * @property Notification $notificationKey
  */
 class NotificationTrigger extends \yii\db\ActiveRecord
 {
 
+    /**
+     * ENUM field values
+     */
+    const REQUEST_TYPE_ANY = 'ANY';
+    const REQUEST_TYPE_AJAX = 'AJAX';
+    const REQUEST_TYPE_NON_AJAX = 'NON_AJAX';
 
     /**
      * {@inheritdoc}
@@ -34,11 +39,14 @@ class NotificationTrigger extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fields', 'link_template'], 'default', 'value' => null],
-            [['route', 'notification_key', 'model_class', 'model_id_param'], 'required'],
-            [['fields'], 'safe'],
-            [['route', 'notification_key', 'model_class', 'model_id_param', 'link_template', 'trigger_type'], 'string', 'max' => 255],
-            [['route'], 'unique'],
+            [['link_template'], 'default', 'value' => null],
+            [['request_type'], 'default', 'value' => 'ANY'],
+            [['route', 'notification_key'], 'required'],
+            [['request_type'], 'string'],
+            [['route', 'notification_key', 'link_template'], 'string', 'max' => 255],
+            ['request_type', 'in', 'range' => array_keys(self::optsRequestType())],
+            [['route', 'notification_key', 'request_type'], 'unique', 'targetAttribute' => ['route', 'notification_key', 'request_type']],
+            [['notification_key'], 'exist', 'skipOnError' => true, 'targetClass' => Notification::class, 'targetAttribute' => ['notification_key' => 'key']],
         ];
     }
 
@@ -51,11 +59,79 @@ class NotificationTrigger extends \yii\db\ActiveRecord
             'id' => 'ID',
             'route' => 'Route',
             'notification_key' => 'Notification Key',
-            'model_class' => 'Model Class',
-            'model_id_param' => 'Model Id Param',
-            'fields' => 'Fields',
+            'request_type' => 'Request Type',
             'link_template' => 'Link Template',
-            'trigger_type' => 'Trigger Type',
         ];
+    }
+
+    /**
+     * Gets query for [[NotificationKey]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNotificationKey()
+    {
+        return $this->hasOne(Notification::class, ['key' => 'notification_key']);
+    }
+
+
+    /**
+     * column request_type ENUM value labels
+     * @return string[]
+     */
+    public static function optsRequestType()
+    {
+        return [
+            self::REQUEST_TYPE_ANY => 'ANY',
+            self::REQUEST_TYPE_AJAX => 'AJAX',
+            self::REQUEST_TYPE_NON_AJAX => 'NON_AJAX',
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function displayRequestType()
+    {
+        return self::optsRequestType()[$this->request_type];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequestTypeAny()
+    {
+        return $this->request_type === self::REQUEST_TYPE_ANY;
+    }
+
+    public function setRequestTypeToAny()
+    {
+        $this->request_type = self::REQUEST_TYPE_ANY;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequestTypeAjax()
+    {
+        return $this->request_type === self::REQUEST_TYPE_AJAX;
+    }
+
+    public function setRequestTypeToAjax()
+    {
+        $this->request_type = self::REQUEST_TYPE_AJAX;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRequestTypeNonajax()
+    {
+        return $this->request_type === self::REQUEST_TYPE_NON_AJAX;
+    }
+
+    public function setRequestTypeToNonajax()
+    {
+        $this->request_type = self::REQUEST_TYPE_NON_AJAX;
     }
 }

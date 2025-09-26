@@ -1,5 +1,4 @@
 <?php
-
 use yii\helpers\Url;
 
 return [
@@ -11,60 +10,44 @@ return [
         'class' => 'kartik\grid\SerialColumn',
         'width' => '30px',
     ],
-    // [
-    // 'class'=>'\kartik\grid\DataColumn',
-    // 'attribute'=>'id',
+        // [
+        // 'class'=>'\kartik\grid\DataColumn',
+        // 'attribute'=>'id',
     // ],
     [
-        'class' => '\kartik\grid\DataColumn',
-        'attribute' => 'route',
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'route',
     ],
     [
-        'class' => '\kartik\grid\DataColumn',
-        'attribute' => 'notification_key',
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'notification_key',
     ],
     [
-        'class' => '\kartik\grid\DataColumn',
-        'attribute' => 'model_class',
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'request_type',
     ],
     [
-        'class' => '\kartik\grid\DataColumn',
-        'attribute' => 'model_id_param',
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'link_template',
     ],
-    [
-        'class' => '\kartik\grid\DataColumn',
-        'attribute' => 'trigger_type',
-    ],
-    [
-        'class' => '\kartik\grid\DataColumn',
-        'attribute' => 'fields',
-    ],
-    // [
-    // 'class'=>'\kartik\grid\DataColumn',
-    // 'attribute'=>'link_template',
-    // ],
     [
         'class' => 'kartik\grid\ActionColumn',
         'dropdown' => false,
         'noWrap' => 'true',
         'template' => '{view} {update} {delete}',
         'vAlign' => 'middle',
-        'urlCreator' => function ($action, $model, $key, $index) {
-            return Url::to([$action, 'id' => $key]);
+        'urlCreator' => function($action, $model, $key, $index) { 
+            return Url::to([$action,'id'=>$key]);
         },
         'viewOptions' => ['role' => 'modal-remote', 'title' => Yii::t('yii2-ajaxcrud', 'View'), 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-outline-success'],
         'updateOptions' => ['role' => 'modal-remote', 'title' => Yii::t('yii2-ajaxcrud', 'Update'), 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-outline-primary'],
-        'deleteOptions' => [
-            'role' => 'modal-remote',
-            'title' => Yii::t('yii2-ajaxcrud', 'Delete'),
-            'class' => 'btn btn-sm btn-outline-danger',
+        'deleteOptions' => ['role' => 'modal-remote', 'title' => Yii::t('yii2-ajaxcrud', 'Delete'), 'class' => 'btn btn-sm btn-outline-danger', 
             'data-confirm' => false,
-            'data-method' => false, // for overide yii data api
+            'data-method' => false,// for overide yii data api
             'data-request-method' => 'post',
             'data-toggle' => 'tooltip',
             'data-confirm-title' => Yii::t('yii2-ajaxcrud', 'Delete'),
-            'data-confirm-message' => Yii::t('yii2-ajaxcrud', 'Delete Confirm')
-        ],
+            'data-confirm-message' => Yii::t('yii2-ajaxcrud', 'Delete Confirm') ],
     ],
 
-];
+];   

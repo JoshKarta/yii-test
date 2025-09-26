@@ -1,11 +1,11 @@
 <?php
 
-use common\models\Notification;
-use common\models\Roles;
-use kartik\select2\Select2;
 use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
+use common\models\Notification;
+use common\models\Roles;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\NotificationRole */
@@ -16,17 +16,27 @@ use yii\helpers\ArrayHelper;
 
 	<?php $form = ActiveForm::begin(); ?>
 
-	<?= $form->field($model, 'notification_id')->widget(Select2::class, [
-		'data' => ArrayHelper::map(Notification::find()->all(), 'id', 'key'),
-		'options' => ['placeholder' => 'Select Notification...'],
-		'pluginOptions' => ['allowClear' => true],
-	]) ?>
-
-	<?= $form->field($model, 'role_id')->widget(Select2::class, [
+	<?= $form->field($model, 'notification_id')->widget(Select2::classname(), [
+		'data' => ArrayHelper::map(Notification::find()->all(), 'id', 'title'),
+		'options' => [
+			'placeholder' => 'Select a notification...',
+		],
+		'pluginOptions' => [
+			'allowClear' => true,
+			'dropdownParent' => '#ajaxCrudModal'
+		]
+	]); ?>
+	<?= $form->field($model, 'role_id')->widget(Select2::classname(), [
 		'data' => ArrayHelper::map(Roles::find()->all(), 'id', 'name'),
-		'options' => ['placeholder' => 'Select Role...'],
-		'pluginOptions' => ['allowClear' => true],
-	]) ?>
+		'options' => [
+			'placeholder' => 'Select a role...',
+			'multiple' => true,
+		],
+		'pluginOptions' => [
+			'allowClear' => true,
+			'dropdownParent' => '#ajaxCrudModal'
+		]
+	]); ?>
 
 
 	<?php if (!Yii::$app->request->isAjax) { ?>

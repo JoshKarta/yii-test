@@ -11,7 +11,7 @@ use yii\widgets\DetailView;
         'model' => $model,
         'attributes' => [
             'notification_id',
-            'role',
+            'role_id',
         ],
     ]) ?>
 

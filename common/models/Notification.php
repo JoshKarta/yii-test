@@ -15,8 +15,8 @@ use Yii;
  * @property int|null $send_email
  * @property string|null $created_at
  *
- * @property NotificationRole[] $notificationRoles
- * @property UserNotification[] $userNotifications
+ * @property NotificationTrigger[] $notificationTriggers
+ * @property NotificationUser[] $notificationUsers
  */
 class Notification extends \yii\db\ActiveRecord
 {
@@ -64,23 +64,23 @@ class Notification extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[NotificationRoles]].
+     * Gets query for [[NotificationTriggers]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getNotificationRoles()
+    public function getNotificationTriggers()
     {
-        return $this->hasMany(NotificationRole::class, ['notification_id' => 'id']);
+        return $this->hasMany(NotificationTrigger::class, ['notification_key' => 'key']);
     }
 
     /**
-     * Gets query for [[UserNotifications]].
+     * Gets query for [[NotificationUsers]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUserNotifications()
+    public function getNotificationUsers()
     {
-        return $this->hasMany(UserNotification::class, ['notification_id' => 'id']);
+        return $this->hasMany(NotificationUser::class, ['notification_id' => 'id']);
     }
 
 }

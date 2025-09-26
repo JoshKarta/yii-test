@@ -19,7 +19,7 @@ class NotificationSearch extends Notification
     {
         return [
             [['id'], 'integer'],
-            [['key', 'title', 'message_template', 'channels', 'enabled', 'send_email', 'created_at'], 'safe'],
+            [['key', 'title', 'message_template', 'enabled', 'send_email', 'created_at'], 'safe'],
         ];
     }
 
@@ -63,7 +63,6 @@ class NotificationSearch extends Notification
         $query->andFilterWhere(['like', 'key', $this->key])
             ->andFilterWhere(['like', 'title', $this->title])
             ->andFilterWhere(['like', 'message_template', $this->message_template])
-            ->andFilterWhere(['like', 'channels', $this->channels])
             ->andFilterWhere(['like', 'enabled', $this->enabled])
             ->andFilterWhere(['like', 'send_email', $this->send_email]);
 
