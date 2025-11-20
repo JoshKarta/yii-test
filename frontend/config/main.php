@@ -92,9 +92,9 @@ return [
         ],
     ],
     'params' => $params,
-    'as notificationListener' => [
-        'class' => \common\components\NotificationListener::class,
-    ],
+    // 'as notificationListener' => [
+    //     'class' => \common\components\NotificationListener::class,
+    // ],
     // 'on beforeRequest' => function ($event) {
     //     Yii::$app->attachBehavior('notificationListener', [
     //         'class' => \common\components\NotificationListener::class

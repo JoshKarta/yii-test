@@ -6,15 +6,18 @@ return [
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
+        'configuration' => [
+            'class' => 'common\components\Configuration',
+        ],
         'cache' => [
             'class' => \yii\caching\FileCache::class,
         ],
         'workflowSource' => [
             'class' => 'cornernote\workflow\manager\components\WorkflowDbSource',
         ],
-        'notificationManager' => [
-            'class' => 'common\components\NotificationManager',
-        ],
+        // 'notificationManager' => [
+        //     'class' => 'common\components\NotificationManager',
+        // ],
     ],
     'modules' => [
         'workflow' => [
