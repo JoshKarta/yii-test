@@ -3,14 +3,17 @@
 namespace common\models;
 
 use Yii;
-use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Expression;
 use yii\helpers\Json;
 
 /**
+ * This is the model class for table "config".
+ *
  * @property int $id
- * @property string $category
+ * @property int $category_id
  * @property string $key
  * @property string|null $value
  * @property string $type
@@ -21,6 +24,10 @@ use yii\helpers\Json;
  * @property string $updated_at
  * @property int|null $created_by
  * @property int|null $updated_by
+ *
+ * @property User $createdBy
+ * @property User $updatedBy
+ * @property ConfigCategory $category
  */
 class Config extends ActiveRecord
 {
@@ -29,13 +36,6 @@ class Config extends ActiveRecord
     const TYPE_BOOLEAN = 'boolean';
     const TYPE_JSON = 'json';
     const TYPE_ARRAY = 'array';
-
-    const CATEGORY_GENERAL = 'general';
-    const CATEGORY_COMPANY = 'company';
-    const CATEGORY_FRONTEND = 'frontend';
-    const CATEGORY_BACKEND = 'backend';
-    const CATEGORY_EMAIL = 'email';
-    const CATEGORY_SYSTEM = 'system';
 
     /**
      * {@inheritdoc}
@@ -53,7 +53,7 @@ class Config extends ActiveRecord
         return [
             [
                 'class' => TimestampBehavior::class,
-                'value' => new \yii\db\Expression('NOW()'),
+                'value' => new Expression('NOW()'),
             ],
             BlameableBehavior::class,
         ];
@@ -65,17 +65,19 @@ class Config extends ActiveRecord
     public function rules()
     {
         return [
-            [['category', 'key'], 'required'],
+            [['category_id', 'key'], 'required'],
+            [['category_id', 'is_system', 'sort_order', 'created_by', 'updated_by'], 'integer'],
             [['value', 'description'], 'string'],
-            [['is_system', 'sort_order', 'created_by', 'updated_by'], 'integer'],
-            [['category'], 'string', 'max' => 50],
             [['key'], 'string', 'max' => 100],
             [['type'], 'string', 'max' => 10],
             [['type'], 'in', 'range' => array_keys(self::getTypes())],
-            [['category', 'key'], 'unique', 'targetAttribute' => ['category', 'key']],
+            [['category_id', 'key'], 'unique', 'targetAttribute' => ['category_id', 'key']],
             [['sort_order'], 'default', 'value' => 0],
             [['is_system'], 'default', 'value' => 0],
             [['type'], 'default', 'value' => self::TYPE_STRING],
+            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => ConfigCategory::class, 'targetAttribute' => ['category_id' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['updated_by' => 'id']],
         ];
     }
 
@@ -86,7 +88,7 @@ class Config extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'category' => 'Category',
+            'category_id' => 'Category',
             'key' => 'Key',
             'value' => 'Value',
             'type' => 'Type',
@@ -101,6 +103,36 @@ class Config extends ActiveRecord
     }
 
     /**
+     * Gets query for [[CreatedBy]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
+    }
+
+    /**
+     * Gets query for [[UpdatedBy]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdatedBy()
+    {
+        return $this->hasOne(User::class, ['id' => 'updated_by']);
+    }
+
+    /**
+     * Gets query for [[Category]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCategory()
+    {
+        return $this->hasOne(ConfigCategory::class, ['id' => 'category_id']);
+    }
+
+    /**
      * Get available types
      */
     public static function getTypes()
@@ -111,21 +143,6 @@ class Config extends ActiveRecord
             self::TYPE_BOOLEAN => 'Boolean',
             self::TYPE_JSON => 'JSON',
             self::TYPE_ARRAY => 'Array',
-        ];
-    }
-
-    /**
-     * Get available categories
-     */
-    public static function getCategories()
-    {
-        return [
-            self::CATEGORY_GENERAL => 'General',
-            self::CATEGORY_COMPANY => 'Company',
-            self::CATEGORY_FRONTEND => 'Frontend',
-            self::CATEGORY_BACKEND => 'Backend',
-            self::CATEGORY_EMAIL => 'Email',
-            self::CATEGORY_SYSTEM => 'System',
         ];
     }
 
@@ -173,20 +190,5 @@ class Config extends ActiveRecord
             default:
                 $this->value = (string) $value;
         }
-    }
-
-    /**
-     * Before save event
-     */
-    public function beforeSave($insert)
-    {
-        if (parent::beforeSave($insert)) {
-            // Ensure system configs cannot be deleted through normal means
-            if ($this->is_system && $this->getIsNewRecord()) {
-                $this->is_system = 0; // Only allow system configs to be created via migrations
-            }
-            return true;
-        }
-        return false;
     }
 }

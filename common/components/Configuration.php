@@ -4,8 +4,8 @@ namespace common\components;
 
 use Yii;
 use yii\base\Component;
-use yii\caching\Cache;
 use common\models\Config;
+use common\models\ConfigCategory;
 
 class Configuration extends Component
 {
@@ -13,6 +13,7 @@ class Configuration extends Component
     const CACHE_DURATION = 3600; // 1 hour
 
     private $_configurations = [];
+    private $_categories = [];
 
     /**
      * Initialize component and load configurations
@@ -30,21 +31,34 @@ class Configuration extends Component
     {
         $cache = Yii::$app->cache;
 
-        $this->_configurations = $cache->getOrSet(self::CACHE_KEY, function () {
-            $configs = Config::find()
-                ->select(['category', 'key', 'value', 'type'])
+        $data = $cache->getOrSet(self::CACHE_KEY, function () {
+            $categories = ConfigCategory::find()
+                ->with(['configs'])
+                ->orderBy(['sort_order' => SORT_ASC])
                 ->asArray()
                 ->all();
 
             $result = [];
-            foreach ($configs as $config) {
-                $result[$config['category']][$config['key']] = [
-                    'value' => $config['value'],
-                    'type' => $config['type']
-                ];
+            foreach ($categories as $category) {
+                $categoryName = $category['name'];
+                $result[$categoryName] = [];
+
+                foreach ($category['configs'] as $config) {
+                    $result[$categoryName][$config['key']] = [
+                        'value' => $config['value'],
+                        'type' => $config['type']
+                    ];
+                }
             }
-            return $result;
+
+            return [
+                'configurations' => $result,
+                'categories' => array_column($categories, 'name', 'id')
+            ];
         }, self::CACHE_DURATION);
+
+        $this->_configurations = $data['configurations'];
+        $this->_categories = $data['categories'];
     }
 
     /**
@@ -63,13 +77,25 @@ class Configuration extends Component
     /**
      * Set configuration value (and save to database)
      */
-    public function set($key, $value, $category = 'general')
+    public function set($key, $value, $categoryName = 'general')
     {
-        $config = Config::findOne(['category' => $category, 'key' => $key]);
+        // Find category by name
+        $category = ConfigCategory::findOne(['name' => $categoryName]);
+        if (!$category) {
+            // Create category if it doesn't exist
+            $category = new ConfigCategory();
+            $category->name = $categoryName;
+            $category->description = 'Automatically created category';
+            if (!$category->save()) {
+                return false;
+            }
+        }
+
+        $config = Config::findOne(['category_id' => $category->id, 'key' => $key]);
 
         if (!$config) {
             $config = new Config();
-            $config->category = $category;
+            $config->category_id = $category->id;
             $config->key = $key;
             $config->type = $this->detectType($value);
         }
@@ -78,13 +104,13 @@ class Configuration extends Component
 
         if ($config->save()) {
             // Update cached value
-            $this->_configurations[$category][$key] = [
+            $this->_configurations[$categoryName][$key] = [
                 'value' => $config->value,
                 'type' => $config->type
             ];
 
             // Update cache
-            Yii::$app->cache->set(self::CACHE_KEY, $this->_configurations, self::CACHE_DURATION);
+            $this->updateCache();
 
             return true;
         }
@@ -117,13 +143,35 @@ class Configuration extends Component
     }
 
     /**
+     * Get all categories
+     */
+    public function getCategories()
+    {
+        return $this->_categories;
+    }
+
+    /**
      * Clear configuration cache
      */
     public function clearCache()
     {
         Yii::$app->cache->delete(self::CACHE_KEY);
         $this->_configurations = [];
+        $this->_categories = [];
         $this->loadConfigurations();
+    }
+
+    /**
+     * Update cache with current data
+     */
+    protected function updateCache()
+    {
+        $data = [
+            'configurations' => $this->_configurations,
+            'categories' => $this->_categories
+        ];
+
+        Yii::$app->cache->set(self::CACHE_KEY, $data, self::CACHE_DURATION);
     }
 
     /**

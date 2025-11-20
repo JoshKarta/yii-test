@@ -15,9 +15,14 @@ return [
     ],
     [
         'class' => '\kartik\grid\DataColumn',
-        'attribute' => 'category',
+        'attribute' => 'categoryName',
+        'label' => 'Category',
+        'value' => function ($model) {
+            return $model->category ? $model->category->name : '<span class="text-muted">N/A</span>';
+        },
+        'format' => 'raw',
         'filterType' => GridView::FILTER_SELECT2,
-        'filter' => \common\models\Config::getCategories(),
+        'filter' => \common\models\ConfigCategory::getCategories(),
         'filterWidgetOptions' => [
             'pluginOptions' => [
                 'allowClear' => true,
@@ -45,6 +50,8 @@ return [
                     : '<span class="badge bg-danger">False</span>';
             } elseif (is_array($value)) {
                 return '<code>' . Html::encode(implode(', ', $value)) . '</code>';
+            } elseif ($value === null) {
+                return '<span class="text-muted">NULL</span>';
             } elseif (strlen($value) > 50) {
                 return '<span title="' . Html::encode($value) . '">' . Html::encode(substr($value, 0, 50) . '...') . '</span>';
             } else {
@@ -87,18 +94,18 @@ return [
         'urlCreator' => function ($action, $model, $key, $index) {
             return Url::to([$action, 'id' => $key]);
         },
-        'viewOptions' => ['role' => 'modal-remote', 'title' => Yii::t('yii2-ajaxcrud', 'View'), 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-outline-success'],
-        'updateOptions' => ['role' => 'modal-remote', 'title' => Yii::t('yii2-ajaxcrud', 'Update'), 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-outline-primary'],
+        'viewOptions' => ['title' => 'View', 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-outline-success'],
+        'updateOptions' => ['role' => 'modal-remote', 'title' => 'Update', 'data-toggle' => 'tooltip', 'class' => 'btn btn-sm btn-outline-primary'],
         'deleteOptions' => [
             'role' => 'modal-remote',
-            'title' => Yii::t('yii2-ajaxcrud', 'Delete'),
+            'title' => 'Delete',
             'class' => 'btn btn-sm btn-outline-danger',
             'data-confirm' => false,
-            'data-method' => false, // for overide yii data api
+            'data-method' => false,
             'data-request-method' => 'post',
             'data-toggle' => 'tooltip',
-            'data-confirm-title' => Yii::t('yii2-ajaxcrud', 'Delete'),
-            'data-confirm-message' => Yii::t('yii2-ajaxcrud', 'Delete Confirm')
+            'data-confirm-title' => 'Delete',
+            'data-confirm-message' => 'Are you sure you want to delete this configuration?'
         ],
     ],
 ];

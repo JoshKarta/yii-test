@@ -23,11 +23,12 @@ use yii\helpers\Html;
             </h5>
         </div>
         <div class="card-body">
-            <?= $form->field($model, 'category')->widget(Select2::classname(), [
-                'data' => \common\models\Config::getCategories(),
+            <?= $form->field($model, 'category_id')->widget(Select2::classname(), [
+                'data' => \common\models\ConfigCategory::getCategories(),
                 'options' => ['placeholder' => 'Select category...'],
                 'pluginOptions' => [
                     'allowClear' => true,
+                    'dropdownParent' => '#ajaxCrudModal'
                 ],
             ]) ?>
 
