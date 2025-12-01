@@ -191,4 +191,25 @@ class Config extends ActiveRecord
                 $this->value = (string) $value;
         }
     }
+
+    // In your Config model, add this afterSave and afterDelete
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        // Clear configuration cache when any config is updated
+        if (Yii::$app->has('app_configurations')) {
+            Yii::$app->configuration->clearCache();
+        }
+    }
+
+    public function afterDelete()
+    {
+        parent::afterDelete();
+
+        // Clear app_configurations cache when any config is deleted
+        if (Yii::$app->has('app_configurations')) {
+            Yii::$app->configuration->clearCache();
+        }
+    }
 }

@@ -22,6 +22,15 @@ use frontend\models\ContactForm;
  */
 class SiteController extends Controller
 {
+
+    protected $enableSignUp;
+
+    public function init()
+    {
+        parent::init();
+        $this->enableSignUp = (bool)Yii::$app->configuration->get('enableSignUp', false, 'frontend');
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -34,7 +43,7 @@ class SiteController extends Controller
                 'rules' => [
                     [
                         'actions' => ['signup'],
-                        'allow' => true,
+                        'allow' => $this->enableSignUp ? true : false,
                         'roles' => ['?'],
                     ],
                     [

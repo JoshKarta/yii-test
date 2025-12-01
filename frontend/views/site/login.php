@@ -10,7 +10,17 @@ use yii\bootstrap5\ActiveForm;
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
 
-$enableForgotPassword = (bool)Yii::$app->configuration->get('enableForgotPassword',  'frontend');
+// Yii::$app->configuration->clearCache();
+$enableForgotPassword = (bool)Yii::$app->configuration->get('enableForgotPassword', false, 'frontend');
+
+// Debug both database value and cached value
+// $debugConfig = \common\models\Config::find()
+//     ->joinWith(['category'])
+//     ->where(['config_category.name' => 'frontend', 'config.key' => 'enableForgotPassword'])
+//     ->one();
+
+// echo "Database value: " . ($debugConfig ? ($debugConfig->value ? 'true' : 'false') : 'not found') . "<br>";
+// echo "Cached value: " . ($enableForgotPassword ? 'true' : 'false') . "<br>";
 ?>
 <div class="site-login">
     <h1><?= Html::encode($this->title) ?></h1>

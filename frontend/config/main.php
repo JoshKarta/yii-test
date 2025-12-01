@@ -90,6 +90,10 @@ return [
                 'PUT api/<resource:[\w\-]+>' => 'api/update',
             ],
         ],
+        'cache' => [
+            'class' => 'yii\caching\FileCache',
+            'cachePath' => '@common/runtime/cache', // Same cache path for both
+        ],
     ],
     'params' => $params,
     // 'as notificationListener' => [

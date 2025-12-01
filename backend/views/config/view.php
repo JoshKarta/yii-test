@@ -19,6 +19,16 @@ if (Yii::$app->request->isAjax) {
 
 $this->params['breadcrumbs'][] = ['label' => 'Configurations', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+// $enableForgotPassword = (bool)Yii::$app->configuration->get('enableForgotPassword', false, 'frontend');
+
+// $debugConfig = \common\models\Config::find()
+//     ->joinWith(['category'])
+//     ->where(['config_category.name' => 'frontend', 'config.key' => 'enableForgotPassword'])
+//     ->one();
+
+// echo "Database value: " . ($debugConfig ? ($debugConfig->value ? 'true' : 'false') : 'not found') . "<br>";
+// echo "Cached value: " . ($enableForgotPassword ? 'true' : 'false') . "<br>";
 ?>
 <div class="config-view">
     <div class="card">
