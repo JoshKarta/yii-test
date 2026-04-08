@@ -3,9 +3,9 @@
 use common\models\Signature;
 use kartik\select2\Select2;
 use yii\helpers\Html;
-use yii\bootstrap5\ActiveForm;
 use yii\helpers\ArrayHelper;
 use common\models\PostType;
+use kartik\form\ActiveForm;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -26,7 +26,6 @@ $postTypes = ArrayHelper::map(PostType::find()->all(), 'id', 'name');
         </div>
         <div class="col-md-6 align-content-center">
             <span class="float-end badge bg-danger fs-6">
-                <?= $model->workflowStatus->label ?>
             </span>
         </div>
     </div>

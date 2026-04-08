@@ -7,8 +7,11 @@ use Yii;
 /**
  * This is the model class for table "notification_role".
  *
+ * @property int $id
  * @property int $notification_id
  * @property int $role_id
+ * @property string|null $created_at
+ * @property string|null $updated_at
  *
  * @property Notification $notification
  * @property Roles $role
@@ -33,7 +36,7 @@ class NotificationRole extends \yii\db\ActiveRecord
         return [
             [['notification_id', 'role_id'], 'required'],
             [['notification_id', 'role_id'], 'integer'],
-            [['notification_id', 'role_id'], 'unique', 'targetAttribute' => ['notification_id', 'role_id']],
+            [['created_at', 'updated_at'], 'safe'],
             [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => Notification::class, 'targetAttribute' => ['notification_id' => 'id']],
             [['role_id'], 'exist', 'skipOnError' => true, 'targetClass' => Roles::class, 'targetAttribute' => ['role_id' => 'id']],
         ];
@@ -45,8 +48,11 @@ class NotificationRole extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
+            'id' => 'ID',
             'notification_id' => 'Notification ID',
             'role_id' => 'Role ID',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
     }
 

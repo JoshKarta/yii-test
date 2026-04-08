@@ -8,14 +8,14 @@ use Yii;
  * This is the model class for table "notification".
  *
  * @property int $id
- * @property string $key
  * @property string $title
- * @property string $message_template
- * @property int|null $enabled
- * @property int|null $send_email
+ * @property string $message
+ * @property string|null $type
  * @property string|null $created_at
+ * @property string|null $updated_at
+ * @property int|null $created_by
  *
- * @property NotificationTrigger[] $notificationTriggers
+ * @property NotificationRole[] $notificationRoles
  * @property NotificationUser[] $notificationUsers
  */
 class Notification extends \yii\db\ActiveRecord
@@ -36,14 +36,13 @@ class Notification extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['enabled'], 'default', 'value' => 1],
-            [['send_email'], 'default', 'value' => 0],
-            [['key', 'title', 'message_template'], 'required'],
-            [['message_template'], 'string'],
-            [['enabled', 'send_email'], 'integer'],
-            [['created_at'], 'safe'],
-            [['key', 'title'], 'string', 'max' => 255],
-            [['key'], 'unique'],
+            [['type', 'created_by'], 'default', 'value' => null],
+            [['title', 'message'], 'required'],
+            [['message'], 'string'],
+            [['created_at', 'updated_at'], 'safe'],
+            [['created_by'], 'integer'],
+            [['title'], 'string', 'max' => 255],
+            [['type'], 'string', 'max' => 100],
         ];
     }
 
@@ -54,23 +53,23 @@ class Notification extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'key' => 'Key',
             'title' => 'Title',
-            'message_template' => 'Message Template',
-            'enabled' => 'Enabled',
-            'send_email' => 'Send Email',
+            'message' => 'Message',
+            'type' => 'Type',
             'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+            'created_by' => 'Created By',
         ];
     }
 
     /**
-     * Gets query for [[NotificationTriggers]].
+     * Gets query for [[NotificationRoles]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getNotificationTriggers()
+    public function getNotificationRoles()
     {
-        return $this->hasMany(NotificationTrigger::class, ['notification_key' => 'key']);
+        return $this->hasMany(NotificationRole::class, ['notification_id' => 'id']);
     }
 
     /**

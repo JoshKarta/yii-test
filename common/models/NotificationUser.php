@@ -10,10 +10,8 @@ use Yii;
  * @property int $id
  * @property int $notification_id
  * @property int $user_id
- * @property string $message
- * @property string|null $link
  * @property int|null $is_read
- * @property string|null $created_at
+ * @property string|null $read_at
  *
  * @property Notification $notification
  * @property User $user
@@ -36,13 +34,11 @@ class NotificationUser extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['link'], 'default', 'value' => null],
+            [['read_at'], 'default', 'value' => null],
             [['is_read'], 'default', 'value' => 0],
-            [['notification_id', 'user_id', 'message'], 'required'],
+            [['notification_id', 'user_id'], 'required'],
             [['notification_id', 'user_id', 'is_read'], 'integer'],
-            [['message'], 'string'],
-            [['created_at'], 'safe'],
-            [['link'], 'string', 'max' => 255],
+            [['read_at'], 'safe'],
             [['notification_id'], 'exist', 'skipOnError' => true, 'targetClass' => Notification::class, 'targetAttribute' => ['notification_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -57,10 +53,8 @@ class NotificationUser extends \yii\db\ActiveRecord
             'id' => 'ID',
             'notification_id' => 'Notification ID',
             'user_id' => 'User ID',
-            'message' => 'Message',
-            'link' => 'Link',
             'is_read' => 'Is Read',
-            'created_at' => 'Created At',
+            'read_at' => 'Read At',
         ];
     }
 
@@ -84,4 +78,10 @@ class NotificationUser extends \yii\db\ActiveRecord
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
+    public function markAsRead()
+    {
+        $this->is_read = 1;
+        $this->read_at = date('Y-m-d H:i:s');
+        return $this->save(false);
+    }
 }

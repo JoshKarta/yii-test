@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\components\NotificationService;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -180,5 +181,41 @@ class Posts extends \yii\db\ActiveRecord
         }
 
         return true;
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        // Only trigger on NEW record
+        if ($insert) {
+
+            // Optional: only notify when published
+            // if ($this->status !== 'published') {
+            //     return;
+            // }
+
+            NotificationService::create(
+                'New Post',
+                'A new post "' . $this->title . '" has been published.',
+                [Yii::$app->params['hoofdId'], Yii::$app->params['onderhoofdId']] // role_ids
+            );
+        }
+
+        // ✏️ UPDATE
+        // Only notify if important fields changed
+        $importantFields = ['title', 'content', 'status'];
+
+        $changed = array_intersect(array_keys($changedAttributes), $importantFields);
+        $fieldsChanged = implode(', ', array_keys($changed));
+
+        if (!empty($changed)) {
+
+            NotificationService::create(
+                'Post Updated',
+                'Post "' . $this->title . '" updated. Fields: ' . $fieldsChanged,
+                [Yii::$app->params['hoofdId'], Yii::$app->params['onderhoofdId']] // role_ids
+            );
+        }
     }
 }
