@@ -123,7 +123,8 @@ if (!Yii::$app->user->isGuest) {
                 ['class' => 'd-flex items-center justify-content-center gap-2']
             );
 
-            // echo \common\widgets\NotificationDropdown::widget();
+
+            echo \common\widgets\NotificationDropdown::widget();
 
             echo Html::beginTag('div', ['class' => 'dropdown d-flex']);
 
