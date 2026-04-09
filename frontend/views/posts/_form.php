@@ -40,21 +40,25 @@ $postTypes = ArrayHelper::map(PostType::find()->all(), 'id', 'name');
         'pluginOptions' => ['allowClear' => true],
     ]) ?>
 
+    <?php if (!$model->isNewRecord): ?>
+        <?= $form->field($model, 'status')->widget(Select2::class, [
+            'data' => [
+                'draft' => 'Draft',
+                'reviewed' => 'Reviewed',
+                'published' => 'Published',
+            ],
+            'options' => ['placeholder' => 'Select post types...'],
+            'pluginOptions' => ['allowClear' => true],
+        ]) ?>
+    <?php endif; ?>
+
     <?= $form->field($model, 'slug')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
 
-    <!-- <?= $form->field($model, 'status')->textInput(['maxlength' => true]) ?> -->
 
     <!-- Mark document as Final Checkbox -->
-    <?php if ($model->workflowStatus && $model->workflowStatus->label === 'hoofd'): ?>
-        <?= $form->field($model, 'publish')->checkbox([
-            'id' => 'mark-final-checkbox',
-            'label' => 'Publiseer post',
-            'uncheck' => 0,   // value saved when unchecked
-            'value' => 1,     // value saved when checked
-        ]) ?>
-    <?php endif; ?>
+
 
 
     <?php if (!Yii::$app->request->isAjax) { ?>

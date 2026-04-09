@@ -174,7 +174,7 @@ class PostsController extends Controller
                         Html::button(Yii::t('yii2-ajaxcrud', 'Save'), ['class' => 'btn btn-primary', 'type' => 'submit'])
                 ];
             } else if ($model->load($request->post())) {
-                WorkflowHelper::setStatusToFinal($model);
+                // WorkflowHelper::setStatusToFinal($model);
 
                 if ($model->save()) {
                     return [
@@ -202,7 +202,7 @@ class PostsController extends Controller
             *   Process for non-ajax request
             */
             if ($model->load($request->post())) {
-                WorkflowHelper::setStatusToFinal($model);
+                // WorkflowHelper::setStatusToFinal($model);
 
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);

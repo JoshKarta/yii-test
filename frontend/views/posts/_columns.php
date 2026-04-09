@@ -31,9 +31,9 @@ return [
         'class' => '\kartik\grid\DataColumn',
         'format' => 'raw',
         'attribute' => 'status',
-        'value' => function ($model) {
-            return '<div class="badge bg-danger">' . $model->workflowStatus->label . '</div>';
-        }
+        // 'value' => function ($model) {
+        //     return '<div class="badge bg-danger">' . $model->workflowStatus->label . '</div>';
+        // }
     ],
     [
         'class' => '\kartik\grid\DataColumn',
